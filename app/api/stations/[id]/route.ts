@@ -17,9 +17,10 @@ import { successResponse, errorResponse } from "@/lib/responses";
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const stationId = params.id?.trim().toUpperCase();
+  const { id } = await params;
+  const stationId = id?.trim().toUpperCase();
   if (!stationId) {
     return errorResponse("Station ID is required in the URL.", 400);
   }

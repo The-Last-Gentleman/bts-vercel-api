@@ -42,7 +42,8 @@ export async function upsertStation(
 /**
  * Patches only the phone + alerts fields on an existing station document.
  * Called by PATCH /api/stations/[id] when the global technician number changes.
- * Uses update() so unrelated fields (name, loc) are preserved.
+ * Uses set() with merge:true so it creates the document if it doesn't exist
+ * (handles stations registered before this feature was introduced).
  */
 export async function updateStationPhone(
   stationId: string,
@@ -51,7 +52,7 @@ export async function updateStationPhone(
 ): Promise<void> {
   const app = getFirebaseApp();
   const db = getFirestore(app);
-  await db.collection("stations").doc(stationId).update({ phone, alerts });
+  await db.collection("stations").doc(stationId).set({ phone, alerts }, { merge: true });
 }
 
 /**
