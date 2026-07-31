@@ -20,7 +20,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const stationId = id?.trim().toUpperCase();
+  const stationId = id?.trim();  // preserve casing — must match RTDB site ID exactly
   if (!stationId) {
     return errorResponse("Station ID is required in the URL.", 400);
   }

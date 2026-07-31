@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
   };
 
   try {
-    await upsertStation(stationId.trim().toUpperCase(), record);
+    await upsertStation(stationId.trim(), record);  // preserve casing — must match RTDB site ID exactly
     return successResponse(`Station "${stationId}" registered in Firestore.`, 201);
   } catch (err) {
     console.error("[POST /api/stations] Firestore write failed:", err);
