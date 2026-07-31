@@ -1,6 +1,6 @@
 import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import type { StationConfig } from "@/types/sms";
+import type { StationConfig, StationRecord } from "@/types/sms";
 
 /**
  * Initialises Firebase Admin exactly once (Vercel can reuse warm
@@ -23,6 +23,35 @@ function getFirebaseApp(): App {
   return initializeApp({
     credential: cert({ projectId, clientEmail, privateKey }),
   });
+}
+
+/**
+ * Creates or fully replaces a station document in Firestore.
+ * Called by POST /api/stations when the dashboard registers a new site.
+ * Uses set() (not merge) so the document is always in a known shape.
+ */
+export async function upsertStation(
+  stationId: string,
+  data: StationRecord
+): Promise<void> {
+  const app = getFirebaseApp();
+  const db = getFirestore(app);
+  await db.collection("stations").doc(stationId).set(data);
+}
+
+/**
+ * Patches only the phone + alerts fields on an existing station document.
+ * Called by PATCH /api/stations/[id] when the global technician number changes.
+ * Uses update() so unrelated fields (name, loc) are preserved.
+ */
+export async function updateStationPhone(
+  stationId: string,
+  phone: string,
+  alerts: boolean
+): Promise<void> {
+  const app = getFirebaseApp();
+  const db = getFirestore(app);
+  await db.collection("stations").doc(stationId).update({ phone, alerts });
 }
 
 /**
