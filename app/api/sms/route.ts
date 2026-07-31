@@ -61,8 +61,13 @@ export async function POST(request: NextRequest) {
     return errorResponse("Station has no emergency phone number configured.", 422);
   }
 
-  // Step 4: Construct the alert message.
-  const message = `ALERT: Intrusion detected at ${station.name} (${station.loc}).`;
+  // Step 4: Construct the alert message based on the station's configured format.
+  // COMPACT  → short, fits within a single SMS segment (≤160 chars)
+  // VERBOSE  → full sentence, easier to read at a glance
+  const message =
+    station.smsFormat === "VERBOSE"
+      ? `BTS ALERT: An intrusion has been detected at ${station.name}, located at ${station.loc}. Please respond immediately.`
+      : `ALERT: ${station.name} | ${station.loc} | Intrusion detected.`;
 
   // Step 5: Send the SMS via SMSPoP.
   try {
