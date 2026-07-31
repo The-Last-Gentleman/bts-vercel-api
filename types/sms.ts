@@ -41,3 +41,13 @@ export interface ApiResult {
   success: boolean;
   message: string;
 }
+
+// ─── Firestore station document ───────────────────────────────────────────────
+// Written by the dashboard when a site is registered or a phone number changes.
+// Read by POST /api/sms when an intrusion alert fires.
+export interface StationRecord {
+  name: string;    // display name, e.g. "Harare CBD Tower"
+  loc: string;     // region / location string, e.g. "Harare Central"
+  phone: string;   // global technician number, format: 263XXXXXXXXX
+  alerts: boolean; // whether SMS alerts are enabled for this station
+}
